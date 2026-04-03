@@ -1,0 +1,5 @@
+{
+  "name": "GlowAI - Personalized Skincare Analysis",
+  "description": "Understand your skin with AI-powered analysis, personalized product recommendations, and custom skincare routines.",
+  "requestFramePermissions": ["camera"]
+}
