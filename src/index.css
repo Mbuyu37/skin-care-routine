@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #10b981; /* Emerald 500 */
+  --color-surface: #0f172a; /* Slate 900 */
+  --color-background: #020617; /* Slate 950 */
+}
+
+body {
+  background-color: var(--color-background);
+  color: #f8fafc; /* Slate 50 */
+}

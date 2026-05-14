@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
@@ -24,7 +25,7 @@ function AppContent() {
   const hideNavFooter = isDashboard || isAuth;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
+    <div className="min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-400">
       <ScrollToTop />
       {!hideNavFooter && <Navbar />}
       <main className="flex-grow">
@@ -46,8 +47,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }

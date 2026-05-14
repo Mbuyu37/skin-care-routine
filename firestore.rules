@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'createdAt', 'updatedAt']) &&
+             data.name is string &&
+             data.email is string &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+
+    function isValidAnalysis(data) {
+      return data.keys().hasAll(['userId', 'date', 'skinType', 'healthScore', 'createdAt']) &&
+             data.userId is string &&
+             data.date is string &&
+             data.skinType is string &&
+             data.healthScore is number &&
+             data.createdAt is timestamp;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && 
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'skinType', 'updatedAt']) &&
+                      request.resource.data.updatedAt == request.time;
+      
+      // Analyses subcollection
+      match /analyses/{analysisId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidAnalysis(request.resource.data) && request.resource.data.userId == userId;
+        allow delete: if isOwner(userId);
+        // No update allowed for results, they are immutable records
+      }
+    }
+    
+    // Testing connection document
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

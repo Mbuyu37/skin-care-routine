@@ -16,6 +16,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { GoogleGenAI, Type } from "@google/genai";
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const skinTypes = ['Oily', 'Dry', 'Combination', 'Sensitive', 'Normal', 'Not sure'];
 const concerns = ['Acne', 'Dark spots', 'Dryness', 'Wrinkles', 'Redness', 'Uneven tone', 'Large pores'];
@@ -40,6 +43,7 @@ export default function AnalysisPage() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,6 +63,21 @@ export default function AnalysisPage() {
         ? prev.mainConcern.filter(c => c !== concern)
         : [...prev.mainConcern, concern]
     }));
+  };
+
+  const saveAnalysisToFirestore = async (result: any) => {
+    if (!user) return;
+    try {
+      const analysesRef = collection(db, 'users', user.uid, 'analyses');
+      await addDoc(analysesRef, {
+        ...result,
+        userId: user.uid,
+        date: new Date().toISOString(),
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error saving analysis to Firestore:", error);
+    }
   };
 
   const handleAnalyze = async () => {
@@ -125,6 +144,12 @@ export default function AnalysisPage() {
       });
 
       const result = JSON.parse(response.text);
+      
+      // Save to Firestore if user is logged in
+      if (user) {
+        await saveAnalysisToFirestore(result);
+      }
+
       // Store result in session storage for the results page
       sessionStorage.setItem('analysisResult', JSON.stringify(result));
       sessionStorage.setItem('analysisImage', image || '');
@@ -161,6 +186,11 @@ export default function AnalysisPage() {
         ],
         tips: ['Drink 2L of water daily', 'Change pillowcases weekly', 'Avoid touching your face']
       };
+
+      if (user) {
+        await saveAnalysisToFirestore(mockResult);
+      }
+
       sessionStorage.setItem('analysisResult', JSON.stringify(mockResult));
       sessionStorage.setItem('analysisImage', image || '');
       setTimeout(() => {
@@ -170,19 +200,19 @@ export default function AnalysisPage() {
   };
 
   return (
-    <div className="min-h-screen bg-rose-50/30 pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-950 pt-24 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Progress Bar */}
         <div className="mb-12">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-rose-950">AI Skin Analysis</h1>
-            <span className="text-sm font-bold text-rose-500">Step {step} of 3</span>
+            <h1 className="text-3xl font-bold text-slate-50 tracking-tight">AI Skin Analysis</h1>
+            <span className="text-sm font-bold text-emerald-500 uppercase tracking-widest">Step {step} of 3</span>
           </div>
-          <div className="h-2 bg-rose-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-900 rounded-full overflow-hidden">
             <motion.div 
               initial={{ width: '33%' }}
               animate={{ width: `${(step / 3) * 100}%` }}
-              className="h-full bg-rose-500"
+              className="h-full bg-emerald-500"
             />
           </div>
         </div>
@@ -193,21 +223,21 @@ export default function AnalysisPage() {
               key="loading"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-[3rem] p-12 lg:p-20 text-center shadow-xl border border-rose-100"
+              className="bg-slate-900 rounded-[3rem] p-12 lg:p-20 text-center shadow-2xl border border-slate-800"
             >
               <div className="relative w-32 h-32 mx-auto mb-8">
-                <div className="absolute inset-0 border-4 border-rose-100 rounded-full" />
+                <div className="absolute inset-0 border-4 border-slate-800 rounded-full" />
                 <motion.div 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 border-4 border-rose-500 rounded-full border-t-transparent"
+                  className="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Sparkles className="text-rose-500 w-12 h-12" />
+                  <Sparkles className="text-emerald-500 w-12 h-12" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-rose-950 mb-4">Analyzing your skin...</h2>
-              <p className="text-rose-900/60 max-w-md mx-auto">
+              <h2 className="text-2xl font-bold text-slate-50 mb-4 tracking-tight">Analyzing your skin...</h2>
+              <p className="text-slate-400 font-light max-w-md mx-auto">
                 Our AI is scanning your photo for texture, hydration levels, and specific concerns. This will only take a moment.
               </p>
               <div className="mt-10 space-y-3 max-w-xs mx-auto">
@@ -217,9 +247,9 @@ export default function AnalysisPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.5 }}
-                    className="flex items-center gap-3 text-sm font-medium text-rose-900/40"
+                    className="flex items-center gap-3 text-sm font-bold text-slate-500"
                   >
-                    <CheckCircle2 size={16} className="text-rose-300" />
+                    <CheckCircle2 size={16} className="text-emerald-500" />
                     {text}
                   </motion.div>
                 ))}
@@ -231,17 +261,17 @@ export default function AnalysisPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white rounded-[3rem] p-8 sm:p-12 shadow-xl border border-rose-100"
+              className="bg-slate-900 rounded-[3rem] p-8 sm:p-12 shadow-2xl border border-slate-800"
             >
               {step === 1 && (
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-bold text-rose-950 mb-4">Upload Skin Photo</h2>
-                    <div className="flex items-start gap-3 p-4 bg-rose-50 rounded-2xl border border-rose-100 mb-8">
-                      <Info className="text-rose-500 shrink-0 mt-0.5" size={20} />
-                      <div className="text-sm text-rose-900/60 leading-relaxed">
-                        <p className="font-bold text-rose-900 mb-1">For best results:</p>
-                        <ul className="list-disc ml-4 space-y-1">
+                    <h2 className="text-2xl font-bold text-slate-50 mb-4 tracking-tight">Upload Skin Photo</h2>
+                    <div className="flex items-start gap-3 p-4 bg-slate-950 rounded-2xl border border-slate-800 mb-8">
+                      <Info className="text-emerald-500 shrink-0 mt-0.5" size={20} />
+                      <div className="text-sm text-slate-400 leading-relaxed">
+                        <p className="font-bold text-slate-200 mb-1">For best results:</p>
+                        <ul className="list-disc ml-4 space-y-1 font-light">
                           <li>Use natural, bright lighting</li>
                           <li>Ensure your face is centered and clear</li>
                           <li>Avoid filters, makeup, or harsh shadows</li>
@@ -253,22 +283,22 @@ export default function AnalysisPage() {
                       onClick={() => !image && fileInputRef.current?.click()}
                       className={cn(
                         "relative aspect-video sm:aspect-[21/9] rounded-[2rem] border-2 border-dashed flex flex-col items-center justify-center transition-all overflow-hidden group cursor-pointer",
-                        image ? "border-rose-200" : "border-rose-200 hover:border-rose-400 hover:bg-rose-50/50"
+                        image ? "border-slate-800" : "border-slate-800 hover:border-emerald-500 hover:bg-slate-950"
                       )}
                     >
                       {image ? (
                         <>
                           <img src={image} alt="Skin" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                          <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 border border-emerald-500/20">
                             <button 
                               onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                              className="p-3 bg-white rounded-full text-rose-500 hover:scale-110 transition-transform"
+                              className="p-3 bg-slate-900 rounded-full text-emerald-500 hover:scale-110 transition-transform active:scale-95"
                             >
                               <RefreshCcw size={20} />
                             </button>
                             <button 
                               onClick={(e) => { e.stopPropagation(); setImage(null); }}
-                              className="p-3 bg-white rounded-full text-rose-500 hover:scale-110 transition-transform"
+                              className="p-3 bg-slate-900 rounded-full text-emerald-500 hover:scale-110 transition-transform active:scale-95 px-4"
                             >
                               <X size={20} />
                             </button>
@@ -276,11 +306,11 @@ export default function AnalysisPage() {
                         </>
                       ) : (
                         <>
-                          <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 mb-4 group-hover:scale-110 transition-transform">
+                          <div className="w-16 h-16 bg-slate-950 rounded-full flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform border border-slate-800">
                             <Camera size={32} />
                           </div>
-                          <p className="text-rose-950 font-bold mb-1">Click to upload or drag and drop</p>
-                          <p className="text-rose-900/40 text-sm">JPG, PNG up to 10MB</p>
+                          <p className="text-slate-200 font-bold mb-1 tracking-tight">Click to upload or drag and drop</p>
+                          <p className="text-slate-500 text-sm font-light uppercase tracking-widest">JPG, PNG up to 10MB</p>
                         </>
                       )}
                       <input 
@@ -296,7 +326,7 @@ export default function AnalysisPage() {
                     <button 
                       disabled={!image}
                       onClick={() => setStep(2)}
-                      className="px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                      className="px-8 py-4 bg-emerald-500 text-slate-950 rounded-2xl font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 active:scale-95"
                     >
                       Next Step
                       <ChevronRight size={20} />
@@ -310,17 +340,17 @@ export default function AnalysisPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-bold text-rose-950 mb-3">Skin Type (if known)</label>
+                        <label className="block text-sm font-bold text-slate-300 mb-3 ml-1 tracking-widest uppercase">Skin Type (if known)</label>
                         <div className="grid grid-cols-2 gap-2">
                           {skinTypes.map(type => (
                             <button
                               key={type}
                               onClick={() => setFormData({ ...formData, skinType: type })}
                               className={cn(
-                                "px-4 py-3 rounded-xl text-sm font-medium border transition-all",
+                                "px-4 py-3 rounded-xl text-sm font-bold border transition-all",
                                 formData.skinType === type 
-                                  ? "bg-rose-500 border-rose-500 text-white shadow-md" 
-                                  : "bg-white border-rose-100 text-rose-900 hover:border-rose-300"
+                                  ? "bg-emerald-500 border-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20" 
+                                  : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-200"
                               )}
                             >
                               {type}
@@ -329,30 +359,30 @@ export default function AnalysisPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-rose-950 mb-3">Age Range</label>
+                        <label className="block text-sm font-bold text-slate-300 mb-3 ml-1 tracking-widest uppercase">Age Range</label>
                         <select 
                           value={formData.ageRange}
                           onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
-                          className="w-full px-4 py-3 bg-rose-50/50 border border-rose-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-200 transition-all"
                         >
-                          <option value="">Select range</option>
-                          {ageRanges.map(range => <option key={range} value={range}>{range}</option>)}
+                          <option value="" className="bg-slate-900">Select range</option>
+                          {ageRanges.map(range => <option key={range} value={range} className="bg-slate-900">{range}</option>)}
                         </select>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-rose-950 mb-3">Main Concerns (Select all that apply)</label>
+                      <label className="block text-sm font-bold text-slate-300 mb-3 ml-1 tracking-widest uppercase">Main Concerns (Select all that apply)</label>
                       <div className="flex flex-wrap gap-2">
                         {concerns.map(concern => (
                           <button
                             key={concern}
                             onClick={() => toggleConcern(concern)}
                             className={cn(
-                              "px-4 py-2 rounded-full text-sm font-medium border transition-all",
+                              "px-4 py-2 rounded-full text-xs font-bold border transition-all uppercase tracking-wider",
                               formData.mainConcern.includes(concern)
-                                ? "bg-rose-100 border-rose-200 text-rose-600"
-                                : "bg-white border-rose-100 text-rose-900/60 hover:border-rose-300"
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-sm shadow-emerald-500/5"
+                                : "bg-slate-950 border-slate-800 text-slate-500 hover:border-slate-600 hover:text-slate-300"
                             )}
                           >
                             {concern}
@@ -364,30 +394,30 @@ export default function AnalysisPage() {
 
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-bold text-rose-950 mb-3">Current Products Used</label>
+                      <label className="block text-sm font-bold text-slate-300 mb-3 ml-1 tracking-widest uppercase">Current Products Used</label>
                       <textarea 
                         placeholder="e.g. Cerave Cleanser, The Ordinary Retinol..."
                         value={formData.products}
                         onChange={(e) => setFormData({ ...formData, products: e.target.value })}
-                        className="w-full px-4 py-3 bg-rose-50/50 border border-rose-100 rounded-xl h-24 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl h-24 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-200 placeholder:text-slate-700 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-rose-950 mb-3">Allergies or Sensitive Ingredients</label>
+                      <label className="block text-sm font-bold text-slate-300 mb-3 ml-1 tracking-widest uppercase">Allergies or Sensitive Ingredients</label>
                       <input 
                         type="text"
                         placeholder="e.g. Fragrance, Alcohol, Essential oils..."
                         value={formData.allergies}
                         onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                        className="w-full px-4 py-3 bg-rose-50/50 border border-rose-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-200 placeholder:text-slate-700 transition-all"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <button 
                       onClick={() => setStep(1)}
-                      className="px-8 py-4 text-rose-900 font-bold flex items-center gap-2 hover:text-rose-500 transition-colors"
+                      className="px-8 py-4 text-slate-500 font-bold flex items-center gap-2 hover:text-emerald-400 transition-colors uppercase tracking-widest text-xs"
                     >
                       <ChevronLeft size={20} />
                       Back
@@ -395,7 +425,7 @@ export default function AnalysisPage() {
                     <button 
                       disabled={!formData.skinType || !formData.ageRange}
                       onClick={() => setStep(3)}
-                      className="px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                      className="px-8 py-4 bg-emerald-500 text-slate-950 rounded-2xl font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 active:scale-95"
                     >
                       Next Step
                       <ChevronRight size={20} />
@@ -407,11 +437,11 @@ export default function AnalysisPage() {
               {step === 3 && (
                 <div className="space-y-10">
                   <div>
-                    <h2 className="text-2xl font-bold text-rose-950 mb-6">Lifestyle Questions</h2>
+                    <h2 className="text-2xl font-bold text-slate-50 mb-6 tracking-tight">Lifestyle Check</h2>
                     <div className="space-y-8">
                       {lifestyleOptions.map(item => (
                         <div key={item.id}>
-                          <label className="block text-sm font-bold text-rose-950 mb-4">{item.label}</label>
+                          <label className="block text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">{item.label}</label>
                           <div className="grid grid-cols-3 gap-4">
                             {item.options.map(option => (
                               <button
@@ -423,8 +453,8 @@ export default function AnalysisPage() {
                                 className={cn(
                                   "px-4 py-4 rounded-2xl text-sm font-bold border transition-all",
                                   formData.lifestyle[item.id as keyof typeof formData.lifestyle] === option
-                                    ? "bg-rose-500 border-rose-500 text-white shadow-lg"
-                                    : "bg-white border-rose-100 text-rose-900/60 hover:border-rose-300"
+                                    ? "bg-emerald-500 border-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 scale-[1.02]"
+                                    : "bg-slate-950 border-slate-800 text-slate-500 hover:border-slate-600 hover:text-slate-300"
                                 )}
                               >
                                 {option}
@@ -436,27 +466,27 @@ export default function AnalysisPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-rose-50 rounded-[2rem] border border-rose-100 flex items-start gap-4">
-                    <AlertCircle className="text-rose-500 shrink-0 mt-1" size={24} />
+                  <div className="p-6 bg-slate-950 rounded-[2rem] border border-slate-800 flex items-start gap-4 shadow-inner">
+                    <AlertCircle className="text-emerald-500 shrink-0 mt-1" size={24} />
                     <div>
-                      <p className="text-sm font-bold text-rose-950 mb-1">Ready for analysis?</p>
-                      <p className="text-sm text-rose-900/60 leading-relaxed">
+                      <p className="text-sm font-bold text-slate-200 mb-1">Ready for analysis?</p>
+                      <p className="text-sm text-slate-500 leading-relaxed font-light">
                         By clicking "Analyze Skin", our AI will process your photo and questionnaire to generate a personalized report. This may take up to 30 seconds.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <button 
                       onClick={() => setStep(2)}
-                      className="px-8 py-4 text-rose-900 font-bold flex items-center gap-2 hover:text-rose-500 transition-colors"
+                      className="px-8 py-4 text-slate-500 font-bold flex items-center gap-2 hover:text-emerald-400 transition-colors uppercase tracking-widest text-xs"
                     >
                       <ChevronLeft size={20} />
                       Back
                     </button>
                     <button 
                       onClick={handleAnalyze}
-                      className="px-10 py-5 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 transition-all shadow-xl shadow-rose-200 flex items-center gap-2"
+                      className="px-10 py-5 bg-emerald-500 text-slate-950 rounded-2xl font-bold hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2 active:scale-95"
                     >
                       <Sparkles size={20} />
                       Analyze Skin

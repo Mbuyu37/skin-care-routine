@@ -34,10 +34,10 @@ export default function Dashboard() {
   ];
 
   const summaryCards = [
-    { title: 'Last Analysis', value: 'Oct 24, 2023', icon: <Calendar className="text-rose-500" />, color: 'bg-rose-50' },
-    { title: 'Skin Type', value: 'Combination', icon: <User className="text-blue-500" />, color: 'bg-blue-50' },
-    { title: 'Main Concern', value: 'Acne & Redness', icon: <ShieldCheck className="text-green-500" />, color: 'bg-green-50' },
-    { title: 'Routine Progress', value: '85%', icon: <TrendingUp className="text-amber-500" />, color: 'bg-amber-50' },
+    { title: 'Last Analysis', value: 'Oct 24, 2023', icon: <Calendar className="text-emerald-500" />, color: 'bg-emerald-500/10' },
+    { title: 'Skin Type', value: 'Combination', icon: <User className="text-indigo-500" />, color: 'bg-indigo-500/10' },
+    { title: 'Main Concern', value: 'Acne & Redness', icon: <ShieldCheck className="text-emerald-500" />, color: 'bg-emerald-500/10' },
+    { title: 'Routine Progress', value: '85%', icon: <TrendingUp className="text-amber-500" />, color: 'bg-amber-500/10' },
   ];
 
   const handleLogout = () => {
@@ -45,23 +45,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-rose-50/30 flex">
+    <div className="min-h-screen bg-slate-950 flex text-slate-50">
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-rose-100 transition-transform duration-300 lg:relative lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transition-transform duration-300 lg:relative lg:translate-x-0 shadow-2xl",
           !isSidebarOpen && "-translate-x-full"
         )}
       >
         <div className="h-full flex flex-col p-6">
           <div className="flex items-center justify-between mb-10">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-rose-200 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-rose-600" />
+              <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                <User className="w-5 h-5 text-emerald-400" />
               </div>
-              <span className="text-xl font-semibold text-rose-900 tracking-tight">GlowAI</span>
+              <span className="text-xl font-bold text-slate-50 tracking-tight">GlowAI</span>
             </Link>
-            <button className="lg:hidden text-rose-900" onClick={() => setIsSidebarOpen(false)}>
+            <button className="lg:hidden text-slate-400" onClick={() => setIsSidebarOpen(false)}>
               <X size={20} />
             </button>
           </div>
@@ -72,13 +72,13 @@ export default function Dashboard() {
                 key={item.name}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all group",
+                  "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all group",
                   location.pathname === item.path 
-                    ? "bg-rose-500 text-white shadow-lg shadow-rose-100" 
-                    : "text-rose-900/60 hover:bg-rose-50 hover:text-rose-900"
+                    ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20" 
+                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
                 )}
               >
-                <span className={cn("transition-transform group-hover:scale-110", location.pathname === item.path ? "text-white" : "text-rose-400")}>
+                <span className={cn("transition-transform group-hover:scale-110", location.pathname === item.path ? "text-slate-950" : "text-slate-500 group-hover:text-emerald-400")}>
                   {item.icon}
                 </span>
                 {item.name}
@@ -86,12 +86,12 @@ export default function Dashboard() {
             ))}
           </nav>
 
-          <div className="pt-6 border-t border-rose-100">
+          <div className="pt-6 border-t border-slate-800">
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 w-full rounded-2xl text-sm font-medium text-rose-900/60 hover:bg-rose-50 hover:text-rose-900 transition-all group"
+              className="flex items-center gap-3 px-4 py-3 w-full rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-emerald-400 transition-all group"
             >
-              <LogOut size={20} className="text-rose-400 group-hover:text-rose-600" />
+              <LogOut size={20} className="text-slate-500 group-hover:text-emerald-400" />
               Logout
             </button>
           </div>
@@ -101,33 +101,33 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-rose-100 px-6 sm:px-10 flex items-center justify-between sticky top-0 z-40">
+        <header className="h-20 bg-slate-950 border-b border-slate-800 px-6 sm:px-10 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-rose-900" onClick={() => setIsSidebarOpen(true)}>
+            <button className="lg:hidden text-slate-400" onClick={() => setIsSidebarOpen(true)}>
               <Menu size={24} />
             </button>
-            <h1 className="text-xl font-bold text-rose-950">Dashboard</h1>
+            <h1 className="text-xl font-bold text-slate-50 tracking-tight">Dashboard</h1>
           </div>
           
           <div className="flex items-center gap-4 sm:gap-6">
-            <div className="hidden sm:flex items-center bg-rose-50 rounded-full px-4 py-2 border border-rose-100 w-64">
-              <Search size={18} className="text-rose-400 mr-2" />
+            <div className="hidden sm:flex items-center bg-slate-900 rounded-full px-4 py-2 border border-slate-800 w-64">
+              <Search size={18} className="text-slate-500 mr-2" />
               <input 
                 type="text" 
                 placeholder="Search..." 
-                className="bg-transparent border-none focus:outline-none text-sm text-rose-900 placeholder:text-rose-300 w-full"
+                className="bg-transparent border-none focus:outline-none text-sm text-slate-200 placeholder:text-slate-600 w-full"
               />
             </div>
-            <button className="relative p-2 text-rose-400 hover:text-rose-600 transition-colors">
+            <button className="relative p-2 text-slate-400 hover:text-emerald-400 transition-colors">
               <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-slate-950"></span>
             </button>
-            <div className="flex items-center gap-3 pl-4 border-l border-rose-100">
+            <div className="flex items-center gap-3 pl-4 border-l border-slate-800">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-rose-950">Jane Doe</p>
-                <p className="text-xs text-rose-900/40">Premium Member</p>
+                <p className="text-sm font-bold text-slate-50">Jane Doe</p>
+                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Premium</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-rose-100 border-2 border-white overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-700 overflow-hidden">
                 <img src="https://i.pravatar.cc/100?img=32" alt="Avatar" referrerPolicy="no-referrer" />
               </div>
             </div>
@@ -140,12 +140,12 @@ export default function Dashboard() {
           <section>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h2 className="text-3xl font-bold text-rose-950 mb-2">Welcome back, Jane! 👋</h2>
-                <p className="text-rose-900/60">Here's what's happening with your skin today.</p>
+                <h2 className="text-3xl font-bold text-slate-50 mb-2 tracking-tight">Welcome back, Jane! 👋</h2>
+                <p className="text-slate-400 font-light">Here's what's happening with your skin today.</p>
               </div>
               <Link 
                 to="/analysis" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 transition-all shadow-lg shadow-rose-100"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 text-slate-950 rounded-2xl font-bold hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
               >
                 <Camera size={18} />
                 New Analysis
@@ -160,13 +160,13 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-sm hover:border-slate-700 transition-all"
                 >
                   <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4", card.color)}>
                     {card.icon}
                   </div>
-                  <p className="text-sm text-rose-900/40 font-medium mb-1">{card.title}</p>
-                  <p className="text-lg font-bold text-rose-950">{card.value}</p>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">{card.title}</p>
+                  <p className="text-lg font-bold text-slate-50 tracking-tight">{card.value}</p>
                 </motion.div>
               ))}
             </div>
@@ -177,40 +177,40 @@ export default function Dashboard() {
             {/* Left Column: Routine & Progress */}
             <div className="lg:col-span-2 space-y-8">
               {/* Current Routine */}
-              <div className="bg-white rounded-[2rem] border border-rose-100 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-rose-100 flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-rose-950">Current Routine</h3>
-                  <Link to="/dashboard/routine" className="text-sm font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1">
+              <div className="bg-slate-900 rounded-[2rem] border border-slate-800 shadow-sm overflow-hidden">
+                <div className="p-8 border-b border-slate-800 flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-slate-50 tracking-tight">Current Routine</h3>
+                  <Link to="/dashboard/routine" className="text-sm font-bold text-emerald-500 hover:text-emerald-400 flex items-center gap-1 transition-colors">
                     View All <ChevronRight size={16} />
                   </Link>
                 </div>
                 <div className="p-8 space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 shrink-0 mt-1">
+                    <div className="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 shrink-0 mt-1">
                       <Sparkles size={20} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-rose-950 mb-1">Morning Routine</p>
-                      <p className="text-sm text-rose-900/60 mb-3">4 steps • 15 mins</p>
+                      <p className="text-sm font-bold text-slate-100 mb-1">Morning Routine</p>
+                      <p className="text-sm text-slate-400 mb-3 font-light">4 steps • 15 mins</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 text-xs font-medium rounded-full">Cleanser</span>
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 text-xs font-medium rounded-full">Vitamin C</span>
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 text-xs font-medium rounded-full">Moisturizer</span>
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 text-xs font-medium rounded-full">SPF 50</span>
+                        <span className="px-3 py-1 bg-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Cleanser</span>
+                        <span className="px-3 py-1 bg-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Vitamin C</span>
+                        <span className="px-3 py-1 bg-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Moisturizer</span>
+                        <span className="px-3 py-1 bg-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">SPF 50</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 shrink-0 mt-1">
+                    <div className="w-10 h-10 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 shrink-0 mt-1">
                       <Droplets size={20} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-rose-950 mb-1">Night Routine</p>
-                      <p className="text-sm text-rose-900/60 mb-3">5 steps • 20 mins</p>
+                      <p className="text-sm font-bold text-slate-100 mb-1">Night Routine</p>
+                      <p className="text-sm text-slate-400 mb-3 font-light">5 steps • 20 mins</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Double Cleanse</span>
-                        <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Retinol</span>
-                        <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Night Cream</span>
+                        <span className="px-3 py-1 bg-slate-800 text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Double Cleanse</span>
+                        <span className="px-3 py-1 bg-slate-800 text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Retinol</span>
+                        <span className="px-3 py-1 bg-slate-800 text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-700">Night Cream</span>
                       </div>
                     </div>
                   </div>
@@ -218,8 +218,8 @@ export default function Dashboard() {
               </div>
 
               {/* Progress Chart Placeholder */}
-              <div className="bg-white rounded-[2rem] border border-rose-100 shadow-sm p-8">
-                <h3 className="text-xl font-bold text-rose-950 mb-8">Skin Progress</h3>
+              <div className="bg-slate-900 rounded-[2rem] border border-slate-800 shadow-sm p-8">
+                <h3 className="text-xl font-bold text-slate-50 mb-8 tracking-tight">Skin Progress</h3>
                 <div className="h-64 flex items-end justify-between gap-2">
                   {[40, 55, 45, 70, 65, 85, 80].map((height, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-3">
@@ -228,11 +228,11 @@ export default function Dashboard() {
                         animate={{ height: `${height}%` }}
                         transition={{ delay: i * 0.1, duration: 1 }}
                         className={cn(
-                          "w-full rounded-t-xl transition-colors",
-                          i === 6 ? "bg-rose-500" : "bg-rose-100 hover:bg-rose-200"
+                          "w-full rounded-t-xl transition-all",
+                          i === 6 ? "bg-emerald-500" : "bg-slate-800 hover:bg-slate-700"
                         )}
                       />
-                      <span className="text-[10px] font-bold text-rose-900/40 uppercase">Day {i + 1}</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Day {i + 1}</span>
                     </div>
                   ))}
                 </div>
@@ -242,8 +242,8 @@ export default function Dashboard() {
             {/* Right Column: Recommendations & Tips */}
             <div className="space-y-8">
               {/* Top Recommendations */}
-              <div className="bg-white rounded-[2rem] border border-rose-100 shadow-sm p-8">
-                <h3 className="text-xl font-bold text-rose-950 mb-6">Top Recommendations</h3>
+              <div className="bg-slate-900 rounded-[2rem] border border-slate-800 shadow-sm p-8">
+                <h3 className="text-xl font-bold text-slate-50 mb-6 tracking-tight">Top Picks</h3>
                 <div className="space-y-6">
                   {[
                     { name: 'Gentle Foaming Cleanser', brand: 'La Roche-Posay', img: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=100' },
@@ -251,33 +251,33 @@ export default function Dashboard() {
                     { name: 'Hyaluronic Acid', brand: 'The Ordinary', img: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=100' },
                   ].map((product, i) => (
                     <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-rose-50 border border-rose-100 shrink-0">
-                        <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" referrerPolicy="no-referrer" />
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
+                        <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform opacity-75" referrerPolicy="no-referrer" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-rose-950 truncate">{product.name}</p>
-                        <p className="text-xs text-rose-900/40">{product.brand}</p>
+                        <p className="text-sm font-bold text-slate-100 truncate tracking-tight">{product.name}</p>
+                        <p className="text-xs text-slate-500 font-light">{product.brand}</p>
                       </div>
-                      <ChevronRight size={16} className="text-rose-300 group-hover:text-rose-500 transition-colors" />
+                      <ChevronRight size={16} className="text-slate-600 group-hover:text-emerald-400 transition-colors" />
                     </div>
                   ))}
                 </div>
-                <button className="w-full mt-8 py-3 bg-rose-50 text-rose-600 rounded-2xl text-sm font-bold hover:bg-rose-100 transition-colors">
-                  View All Recommendations
+                <button className="w-full mt-8 py-3 bg-slate-950 text-emerald-500 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-all border border-slate-800 active:scale-95">
+                  View All Picks
                 </button>
               </div>
 
               {/* Daily Tip */}
-              <div className="bg-gradient-to-br from-rose-500 to-rose-600 rounded-[2rem] p-8 text-white relative overflow-hidden">
-                <Sparkles className="absolute -top-4 -right-4 w-24 h-24 text-white/10 rotate-12" />
-                <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-[2rem] p-8 text-slate-950 relative overflow-hidden shadow-2xl shadow-emerald-500/10">
+                <Sparkles className="absolute -top-4 -right-4 w-24 h-24 text-slate-950/10 rotate-12" />
+                <h4 className="text-lg font-bold mb-4 flex items-center gap-2 tracking-tight">
                   <Sparkles size={20} />
                   Daily Skin Tip
                 </h4>
-                <p className="text-rose-50 text-sm leading-relaxed mb-6">
+                <p className="text-slate-900 text-sm leading-relaxed mb-6 font-medium">
                   "Always apply your sunscreen as the last step of your morning routine, even on cloudy days. UV rays can penetrate clouds and windows!"
                 </p>
-                <button className="text-xs font-bold bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-colors">
+                <button className="text-[10px] font-bold bg-slate-950/10 hover:bg-slate-950/20 px-4 py-2 rounded-full transition-colors uppercase tracking-widest border border-slate-950/10">
                   Learn More
                 </button>
               </div>
